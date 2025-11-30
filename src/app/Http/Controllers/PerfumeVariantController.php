@@ -2,49 +2,59 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PerfumeVariant;
+use App\Http\Resources\PerfumeVariantResource;
 use App\Http\Requests\StorePerfumeVariantRequest;
 use App\Http\Requests\UpdatePerfumeVariantRequest;
-use App\Models\PerfumeVariant;
 
 class PerfumeVariantController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $variants = PerfumeVariant::with(['perfume', 'size', 'tier'])
+            ->where('is_active', true)
+            ->get();
+        
+        return PerfumeVariantResource::collection($variants);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePerfumeVariantRequest $request)
     {
-        //
+        $variant = PerfumeVariant::create([
+            'perfume_id' => $request->perfume_id,
+            'size_id' => $request->size_id,
+            'tier_id' => $request->tier_id,
+            'stock_quantity' => $request->stock_quantity,
+            'price' => $request->price,
+            'created_date' => now(),
+            'last_updated' => now(),
+            'is_active' => $request->is_active ?? true,
+        ]);
+
+        return new PerfumeVariantResource($variant->load(['perfume', 'size', 'tier']));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(PerfumeVariant $perfumeVariant)
+    public function show(PerfumeVariant $variant)
     {
-        //
+        return new PerfumeVariantResource($variant->load(['perfume', 'size', 'tier']));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePerfumeVariantRequest $request, PerfumeVariant $perfumeVariant)
+    public function update(UpdatePerfumeVariantRequest $request, PerfumeVariant $variant)
     {
-        //
+        $variant->update([
+            ...$request->only(['perfume_id', 'size_id', 'tier_id', 'stock_quantity', 'price', 'is_active']),
+            'last_updated' => now(),
+        ]);
+
+        return new PerfumeVariantResource($variant->fresh(['perfume', 'size', 'tier']));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PerfumeVariant $perfumeVariant)
+    public function destroy(PerfumeVariant $variant)
     {
-        //
+        $variant->delete();
+
+        return response()->json([
+            'message' => 'Variant deleted successfully'
+        ]);
     }
 }

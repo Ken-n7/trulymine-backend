@@ -1,50 +1,22 @@
 <?php
 
+// app/Http/Controllers/OrderItemController.php
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreOrderItemRequest;
-use App\Http\Requests\UpdateOrderItemRequest;
 use App\Models\OrderItem;
+use App\Http\Resources\OrderItemResource;
+use Illuminate\Http\Request;
 
 class OrderItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $orderItems = OrderItem::with(['variant', 'discount'])->get();
+        return OrderItemResource::collection($orderItems);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreOrderItemRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(OrderItem $orderItem)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateOrderItemRequest $request, OrderItem $orderItem)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(OrderItem $orderItem)
-    {
-        //
+        return new OrderItemResource($orderItem->load(['variant', 'discount']));
     }
 }

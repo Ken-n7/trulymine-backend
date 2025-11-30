@@ -2,49 +2,75 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreDiscountRequest;
-use App\Http\Requests\UpdateDiscountRequest;
 use App\Models\Discount;
+use App\Http\Resources\DiscountResource;
+use Illuminate\Http\Request;
 
 class DiscountController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $discounts = Discount::with('discountType')
+            ->where('is_active', true)
+            ->get();
+        
+        return DiscountResource::collection($discounts);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreDiscountRequest $request)
+    public function store(Request $request)
     {
-        //
+        $request->validate([
+            'discount_name' => 'required|string|max:100',
+            'discount_code' => 'required|string|max:100|unique:discounts,discount_code',
+            'discount_type_id' => 'required|exists:discount_types,id',
+            'value' => 'required|numeric|min:0',
+            'description' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+        ]);
+
+        $discount = Discount::create([
+            ...$request->only(['discount_name', 'discount_code', 'discount_type_id', 'value', 'description', 'start_date', 'end_date']),
+            'created_date' => now(),
+            'last_updated' => now(),
+            'is_active' => $request->is_active ?? true,
+        ]);
+
+        return new DiscountResource($discount->load('discountType'));
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Discount $discount)
     {
-        //
+        return new DiscountResource($discount->load('discountType'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateDiscountRequest $request, Discount $discount)
+    public function update(Request $request, Discount $discount)
     {
-        //
+        $request->validate([
+            'discount_name' => 'sometimes|string|max:100',
+            'discount_code' => 'sometimes|string|max:100|unique:discounts,discount_code,' . $discount->id,
+            'discount_type_id' => 'sometimes|exists:discount_types,id',
+            'value' => 'sometimes|numeric|min:0',
+            'description' => 'sometimes|string',
+            'start_date' => 'sometimes|date',
+            'end_date' => 'sometimes|date|after:start_date',
+            'is_active' => 'sometimes|boolean',
+        ]);
+
+        $discount->update([
+            ...$request->only(['discount_name', 'discount_code', 'discount_type_id', 'value', 'description', 'start_date', 'end_date', 'is_active']),
+            'last_updated' => now(),
+        ]);
+
+        return new DiscountResource($discount->fresh('discountType'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Discount $discount)
     {
-        //
+        $discount->delete();
+
+        return response()->json([
+            'message' => 'Discount deleted successfully'
+        ]);
     }
 }

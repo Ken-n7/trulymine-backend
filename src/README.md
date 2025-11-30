@@ -21,10 +21,10 @@ A B2B wholesale perfume distribution platform connecting the business owner with
 ## System Architecture
 
 ### Tech Stack
-- **Backend**: Laravel (PHP)
+- **Backend**: Laravel 12.x (PHP 8.2)
 - **Frontend**: Angular
 - **Authentication**: Laravel Sanctum (API tokens)
-- **Database**: PostgreSQL/MySQL
+- **Database**: MySQL
 - **API Type**: RESTful API
 - **Architecture**: Separated frontend/backend (SPA)
 
@@ -315,10 +315,10 @@ POST/PUT/DELETE (admin only for all above)
 
 ### Prerequisites
 - **Backend:**
-  - PHP 8.1+
+  - PHP 8.2+
   - Composer
-  - Laravel 11.x
-  - MySQL/PostgreSQL
+  - Laravel 12.x
+  - MySQL 8.0+
   
 - **Frontend:**
   - Node.js 18+

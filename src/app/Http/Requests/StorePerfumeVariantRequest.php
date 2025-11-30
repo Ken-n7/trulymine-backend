@@ -52,7 +52,7 @@ class StorePerfumeVariantRequest extends FormRequest
                 ->where('size_id', $this->size_id)
                 ->where('tier_id', $this->tier_id)
                 ->exists();
-
+            
             if ($exists) {
                 $validator->errors()->add(
                     'perfume_id',

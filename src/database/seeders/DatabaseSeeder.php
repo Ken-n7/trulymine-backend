@@ -2,24 +2,45 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Seed lookup tables in correct order
+        $this->call([
+            RoleSeeder::class,
+            CategorySeeder::class,
+            PerfumeSizeSeeder::class,
+            PerfumeTierSeeder::class,
+            OrderStatusSeeder::class,
+            PaymentStatusSeeder::class,
+            PaymentModeSeeder::class,
+            DiscountTypeSeeder::class,
         ]);
+
+        // Create default admin user
+        $adminRole = \App\Models\Role::where('role', 'Admin')->first();
+        
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@perfume.com',
+            'password' => Hash::make('password123'),
+            'role_id' => $adminRole->id,
+            'created_date' => now(),
+            'last_updated' => now(),
+            'is_active' => true,
+        ]);
+
+        $this->command->info('✅ Lookup tables seeded successfully!');
+        $this->command->info('📧 Admin Email: admin@perfume.com');
+        $this->command->info('🔑 Admin Password: password123');
     }
 }
+
