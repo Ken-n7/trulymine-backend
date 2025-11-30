@@ -14,6 +14,21 @@ class DiscountResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'discount_name' => $this->discount_name,
+            'discount_code' => $this->discount_code,
+            'discount_type' => [
+                'id' => $this->discountType->id,
+                'name' => $this->discountType->name,
+            ],
+            'value' => $this->value,
+            'description' => $this->description,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
+            'created_date' => $this->created_date,
+            'last_updated' => $this->last_updated,
+            'is_active' => $this->is_active,
+        ];
     }
 }

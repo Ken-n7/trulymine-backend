@@ -14,6 +14,18 @@ class PerfumeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'category' => [
+                'id' => $this->category->id,
+                'category' => $this->category->category,
+            ],
+            'variants' => PerfumeVariantResource::collection($this->whenLoaded('variants')),
+            'created_date' => $this->created_date,
+            'last_updated' => $this->last_updated,
+            'is_active' => $this->is_active,
+        ];
     }
 }
