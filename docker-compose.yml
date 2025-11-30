@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: trulymine_backend
+    user: "1000:1000" 
     volumes:
       - ./src:/var/www/html
     environment:
