@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PerfumeVariant;
@@ -102,9 +101,39 @@ class OrderController extends Controller
     public function update(UpdateOrderRequest $request, Order $order)
     {
         return DB::transaction(function () use ($request, $order) {
+            // Get old status before updating
+            $oldStatusId = $order->status_id;
+            
             // Update order status if provided
             if ($request->has('status_id')) {
-                $order->update(['status_id' => $request->status_id]);
+                $newStatusId = $request->status_id;
+                $order->update(['status_id' => $newStatusId]);
+                
+                // Handle stock management based on status changes
+                if ($oldStatusId !== $newStatusId) {
+                    $approvedStatus = \App\Models\OrderStatus::where('status', 'Approved')->first();
+                    $cancelledStatus = \App\Models\OrderStatus::where('status', 'Cancelled')->first();
+                    
+                    // Deduct stock when order is approved
+                    if ($approvedStatus && $newStatusId === $approvedStatus->id) {
+                        foreach ($order->orderItems as $item) {
+                            $variant = $item->variant;
+                            $variant->decrement('stock_quantity', $item->quantity);
+                            $variant->update(['last_updated' => now()]);
+                        }
+                    }
+                    
+                    // Restore stock if order is cancelled (and was previously approved)
+                    if ($cancelledStatus && $newStatusId === $cancelledStatus->id) {
+                        if ($oldStatusId === $approvedStatus->id) {
+                            foreach ($order->orderItems as $item) {
+                                $variant = $item->variant;
+                                $variant->increment('stock_quantity', $item->quantity);
+                                $variant->update(['last_updated' => now()]);
+                            }
+                        }
+                    }
+                }
             }
             
             if ($request->has('payment_status_id')) {

@@ -19,11 +19,14 @@ class OrderItemResource extends JsonResource
             'variant' => new PerfumeVariantResource($this->whenLoaded('variant')),
             'quantity' => $this->quantity,
             'price_at_reservation' => $this->price_at_reservation,
-            'discount' => $this->when($this->discount_id && $this->relationLoaded('discount'), [
-                'id' => $this->discount->id,
-                'discount_code' => $this->discount->discount_code,
-                'value' => $this->discount->value,
-            ]),
+            'discount' => $this->when(
+                $this->relationLoaded('discount') && $this->discount,
+                [
+                    'id' => $this->discount?->id,
+                    'discount_code' => $this->discount?->discount_code,
+                    'value' => $this->discount?->value,
+                ]
+            ),
             'sub_total' => $this->sub_total,
             'created_date' => $this->created_date,
             'last_updated' => $this->last_updated,

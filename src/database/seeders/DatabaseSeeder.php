@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
             PaymentStatusSeeder::class,
             PaymentModeSeeder::class,
             DiscountTypeSeeder::class,
+            PerfumeSeeder::class,
+            PerfumeVariantSeeder::class,
         ]);
 
         // Create default admin user
@@ -39,6 +41,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->command->info('✅ Lookup tables seeded successfully!');
+        $this->command->info('✅ 16 perfumes created!');
+        $this->command->info('✅ 16 variants created (All Regular tier @ ₱170.00)!');
         $this->command->info('📧 Admin Email: admin@perfume.com');
         $this->command->info('🔑 Admin Password: password123');
     }
