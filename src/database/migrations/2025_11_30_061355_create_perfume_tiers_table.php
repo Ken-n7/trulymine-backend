@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('perfume_tiers', function (Blueprint $table) {
             $table->id();
-            $table->string('tier', 10)->unique();
+            $table->string('tier', 50)->unique();
             $table->timestampTz('created_date');
             $table->timestampTz('last_updated');
             $table->boolean('is_active');

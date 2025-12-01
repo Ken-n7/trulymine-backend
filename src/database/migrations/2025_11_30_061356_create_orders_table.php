@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->decimal('total_amount', 8, 2);
-            $table->foreignId('status_id')->constrained('order_statuses')->onDelete('restrict')->onUpdate('cascade');
-            $table->foreignId('payment_status_id')->constrained('payment_statuses')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('status_id')->constrained('order_status')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('payment_status_id')->constrained('payment_status')->onDelete('restrict')->onUpdate('cascade');
             $table->timestampTz('created_date');
             $table->timestampTz('last_updated');
             $table->boolean('is_active');

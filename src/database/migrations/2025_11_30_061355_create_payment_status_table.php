@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payment_statuses', function (Blueprint $table) {
+        Schema::create('payment_status', function (Blueprint $table) {
             $table->id();
             $table->string('status_name', 100)->unique();
             $table->timestampTz('created_date');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payment_statuses');
+        Schema::dropIfExists('payment_status');
     }
 };
